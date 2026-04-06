@@ -12,7 +12,7 @@ RANDOM_SEED ?= 42
 #traning hyperparams
 EPOCHS ?= 5.0
 LEARNING_RATE ?= 5e-5
-BATCH_SIZE ?= 4
+BATCH_SIZE ?= 8
 GRAD_ACCUM_STEPS ?= 1
 WARMUP_RATIO ?= 0.1
 WEIGHT_DECAY ?= 0.1
@@ -23,6 +23,13 @@ LORA_ALPHA ?= 32
 LORA_DROPOUT ?= 0.05
 LORA_BIAS ?= none
 
+#inference settings
+INFERENCE_MODE ?= respond
+N_SAMPLES ?= 10
+MAX_LENGTH ?= 512
+TEMPERATURE ?= 1.0
+
+#start traning
 sft_train_start:
 	python -m train.main \
 	    --model $(MODEL) \
@@ -43,12 +50,28 @@ sft_train_start:
 	    --lora_r $(LORA_R) \
 	    --lora_alpha $(LORA_ALPHA) \
 	    --lora_dropout $(LORA_DROPOUT) \
-	    --lora_bias $(LORA_BIAS)	
+	    --lora_bias $(LORA_BIAS)
+#run inference
+sft_inference:
+	python -m train.inferance \
+	    --model $(MODEL) \
+	    --checkpoint $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/best_checkpoint \
+	    --dataset_path $(DEV_PATHS) \
+	    --mode $(INFERENCE_MODE) \
+	    --n_samples $(N_SAMPLES) \
+	    --batch_size $(BATCH_SIZE) \
+	    --max_length $(MAX_LENGTH) \
+	    --temperature $(TEMPERATURE)
 
+#run metrics evaluation
+sft_metrics:
+	python train/metrics.py \
+	    --input_path $(INPUT_PATH) \
+	    --mode $(METRICS_MODE)
+
+#for visal
 run-tensorboard:
 	tensorboard --logdir $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/
-
-
 #dry-build
 docker-build:
 	docker build -t clarifying-questions .
