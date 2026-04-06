@@ -45,8 +45,8 @@ sft_train_start:
 	    --lora_dropout $(LORA_DROPOUT) \
 	    --lora_bias $(LORA_BIAS)	
 
-# run-tensorboard:
-#     tensorboard --logdir $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/
+run-tensorboard:
+	tensorboard --logdir $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/
 
 
 #dry-build
