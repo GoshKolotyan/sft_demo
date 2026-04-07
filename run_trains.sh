@@ -2,15 +2,17 @@
 set -e
 
 MODELS=(
-    "meta-llama/Llama-3.2-3B"
+    # "meta-llama/Llama-3.2-3B"
     # "meta-llama/Llama-3.2-1B"
-    # "google/gemma-2-2b"
+    "google/gemma-2-2b"
+    "Qwen/Qwen2.5-3B"
 )
 
 EXPERIMENT_NAMES=(
-    "Llama-3.2-3B"
+    # "Llama-3.2-3B"
     # "Llama-3.2-1B"
-    # "gemma-2-2b"
+    "gemma-2-2b"
+    "Qwen2.5-3B"
 )
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -32,8 +34,8 @@ for i in "${!MODELS[@]}"; do
     CHECKPOINT_DIR="$OUTPUT_DIR/$MODEL/gen_clarify_q/$EXP/best_checkpoint"
     INFERENCE_OUTPUT="$CHECKPOINT_DIR/ambigqa.dev_4h.clarify.clarify_q_s${N_SAMPLES}.jsonl"
 
-    echo "=== Metrics: $EXP ==="
-    make sft_metrics INPUT_PATH="$INFERENCE_OUTPUT" METRICS_MODE=clarify
+    # echo "=== Metrics: $EXP ==="
+    # make sft_metrics INPUT_PATH="$INFERENCE_OUTPUT" METRICS_MODE=clarify_q
 
     echo "Done: $EXP"
 done

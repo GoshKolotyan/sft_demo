@@ -1,6 +1,4 @@
 #basic setting
-MODELS = $(MODEL)
-
 MODEL ?= Llama-3.2-3B
 EXPERIMENT_NAME ?= Llama-3.2-3B
 CHECKPOINT ?=
@@ -11,7 +9,7 @@ MODE ?= gen_clarify_q
 OUTPUT_DIR ?= $(CURDIR)/aua
 RANDOM_SEED ?= 42
 
-#traning hyperparams
+#training hyperparams
 EPOCHS ?= 5.0
 LEARNING_RATE ?= 5e-5
 BATCH_SIZE ?= 8
@@ -27,11 +25,12 @@ LORA_BIAS ?= none
 
 #inference settings
 INFERENCE_MODE ?= respond
+DATASET_PATH ?= $(DEV_PATHS)
 N_SAMPLES ?= 10
 MAX_LENGTH ?= 512
 TEMPERATURE ?= 1.0
 
-#start traning
+#start training
 sft_train_start:
 	python -m train.main \
 	    --model $(MODEL) \
@@ -55,10 +54,10 @@ sft_train_start:
 	    --lora_bias $(LORA_BIAS)
 #run inference
 sft_inference:
-	python -m train.inferance \
+	python -m train.inference \
 	    --model $(MODEL) \
 	    --checkpoint $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/best_checkpoint \
-	    --dataset_path $(DEV_PATHS) \
+	    --dataset_path $(DATASET_PATH) \
 	    --mode $(INFERENCE_MODE) \
 	    --n_samples $(N_SAMPLES) \
 	    --batch_size $(BATCH_SIZE) \
@@ -67,11 +66,11 @@ sft_inference:
 
 #run metrics evaluation
 sft_metrics:
-	python train/metrics.py \
+	python -m train.metrics \
 	    --input_path $(INPUT_PATH) \
 	    --mode $(METRICS_MODE)
 
-#for visal
+#for visual
 run-tensorboard:
 	tensorboard --logdir $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/
 #dry-build

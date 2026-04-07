@@ -15,4 +15,4 @@ wheels/
 uv.lock
 
 #experiment weights and logs
-aua/
+# aua/
