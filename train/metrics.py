@@ -3,7 +3,7 @@ import argparse
 
 
 from collections import Counter
-from helpers import precision_recall, normalize, em
+from train.helpers import precision_recall, normalize, em
 
 
 def eval_respond(data, answers_key):

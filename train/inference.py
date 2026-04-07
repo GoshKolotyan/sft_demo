@@ -2,13 +2,14 @@ import os
 import json
 import random
 import argparse
+import torch
 from tqdm import tqdm
 
 from peft import PeftModel
 from accelerate import Accelerator, PartialState
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
-from train.helpers import batched, partitioned
+from train.helpers import batched, partitioned, get_device
 from train.helpers import gen_direct_qa_output_prompt, gen_clarify_q_prompt, gen_clarify_a_prompt, gen_qa_output_prompt
 
 
@@ -234,11 +235,22 @@ def main(args):
     tokenizer.padding_side = "left"
     tokenizer.truncation_side = "left"
 
-    bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+    device = get_device()
+    print(f'Using device: {device}')
+
+    load_kwargs = {}
+    if device == 'cuda':
+        from transformers import BitsAndBytesConfig
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+        load_kwargs['quantization_config'] = bnb_config
+        load_kwargs['device_map'] = {'': distributed_state.process_index}
+    else:
+        load_kwargs['device_map'] = device
+        load_kwargs['torch_dtype'] = torch.float32
+
     model = AutoModelForCausalLM.from_pretrained(
         args.base_model,
-        quantization_config=bnb_config,
-        device_map={'': distributed_state.process_index}
+        **load_kwargs,
     )
     if args.merge_checkpoint:
         model = PeftModel.from_pretrained(

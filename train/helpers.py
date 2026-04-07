@@ -1,5 +1,17 @@
 import string
 import regex as re
+import torch
+
+
+def get_device():
+    """Return the best available device: cuda, mps, or cpu."""
+    if torch.cuda.is_available():
+        return "cuda"
+    elif torch.backends.mps.is_available():
+        return "mps"
+    else:
+        return "cpu"
+
 
 #################################
 # Clarifying Question Utils
