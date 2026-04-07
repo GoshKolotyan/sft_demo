@@ -37,7 +37,7 @@ def train(args, train_data, dev_data, experiment_dir):
     )
 
     model = AutoModelForCausalLM.from_pretrained(
-        args.base_model,
+        args.model,
         # load_in_8bit=quantization_configs,
         device_map={'':PartialState().process_index}
     )
@@ -58,7 +58,7 @@ def train(args, train_data, dev_data, experiment_dir):
             task_type="CAUSAL_LM",
         )
 
-    tokenizer = AutoTokenizer.from_pretrained(args.base_model)
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
     tokenizer.pad_token = tokenizer.unk_token
 
     trainer = SFTTrainer(

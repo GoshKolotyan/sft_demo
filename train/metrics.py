@@ -28,16 +28,16 @@ def eval_respond(data, answers_key):
         'em': sample_metrics_counter['any_em'] / len(data),
     }
     print('Greedy Metrics:')
-    # print(json.dumps(greedy_metrics, indent=2))
     keys, vals = zip(*greedy_metrics.items())
     print('\t'.join(keys))
     print('\t'.join(['{:.3f}'.format(v) for v in vals]))
 
     print('Sample Metrics:')
-    # print(json.dumps(sample_metrics, indent=2))
     keys, vals = zip(*sample_metrics.items())
     print('\t'.join(keys))
     print('\t'.join(['{:.3f}'.format(v) for v in vals]))
+
+    return {'greedy': greedy_metrics, 'sample': sample_metrics}
 
 def eval_clarify(data, answers_key):
     metrics_counter = Counter()
@@ -66,6 +66,7 @@ def eval_clarify(data, answers_key):
     print('\t'.join(keys))
     print('\t'.join(['{:.3f}'.format(v) for v in vals]))
 
+    return metrics
 
 
 def main(args):
@@ -73,21 +74,27 @@ def main(args):
         data = [json.loads(l) for l in f]
     ambig_data = [ex for ex in data if ex['isambig']]
 
+    results = {}
     if args.mode == 'respond':
         print('NQ-Open Evaluations:')
-        eval_respond(data, 'nq_answers')
+        results['nq_open'] = eval_respond(data, 'nq_answers')
         print()
         print('AmbigQA Evaluations:')
-        eval_respond(ambig_data, 'answers')
+        results['ambigqa'] = eval_respond(ambig_data, 'answers')
     elif args.mode == 'clarify':
         print('NQ-Open Evaluations:')
-        eval_clarify(data, 'is_nq')
+        results['nq_open'] = eval_clarify(data, 'is_nq')
         print()
         print('AmbigQA Evaluations:')
-        eval_clarify(ambig_data, 'is_ambig')
+        results['ambigqa'] = eval_clarify(ambig_data, 'is_ambig')
     else:
         raise ValueError(args.mode)
     print()
+
+    metrics_path = args.input_path.replace('.jsonl', '.metrics.json')
+    with open(metrics_path, 'w') as f:
+        json.dump(results, f, indent=2)
+    print(f'Metrics saved to {metrics_path}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

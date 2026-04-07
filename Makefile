@@ -1,12 +1,14 @@
 #basic setting
+MODELS = $(MODEL)
+
 MODEL ?= Llama-3.2-3B
 EXPERIMENT_NAME ?= Llama-3.2-3B
 CHECKPOINT ?=
 TRAIN_PATHS ?= data/ambigqa.train_4k.clarify.jsonl
 DEV_PATHS ?= data/ambigqa.dev_4h.clarify.jsonl
 TEST ?=
-MODE ?= gen_direct_qa_output
-OUTPUT_DIR ?= /home/gosh/Desktop/Work/AUA/sft_demo/aua
+MODE ?= gen_clarify_q
+OUTPUT_DIR ?= $(CURDIR)/aua
 RANDOM_SEED ?= 42
 
 #traning hyperparams

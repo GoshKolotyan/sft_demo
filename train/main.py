@@ -73,8 +73,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser =ArgumentParser()
-    parser.add_argument('--model', default="llama3.1-base")
-    parser.add_argument('--base_model', default=None, help="HF model name/path; resolved from --model if not set")
+    parser.add_argument('--model', default=None)
     parser.add_argument('--experiment_name')
     parser.add_argument('--checkpoint', default=None)
     parser.add_argument('--train_paths', nargs='+')
@@ -104,13 +103,6 @@ if __name__ == '__main__':
 
     cli_args = parser.parse_args()
 
-    if cli_args.base_model is None:
-        model_map = {
-            'Llama-3.2-3B': 'meta-llama/Llama-3.2-3B',
-        }
-        if cli_args.model not in model_map:
-            raise ValueError(f"Unknown model '{cli_args.model}'. Set --base_model explicitly or add to model_map.")
-        cli_args.base_model = model_map[cli_args.model]
 
     random.seed(cli_args.random_seed)
     main(cli_args)
