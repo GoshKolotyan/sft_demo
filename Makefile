@@ -25,6 +25,8 @@ LORA_BIAS ?= none
 
 #inference settings
 INFERENCE_MODE ?= respond
+METRICS_MODE ?= clarify_q
+INPUT_PATH ?= $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/best_checkpoint/ambigqa.dev_4h.clarify.clarify_q_s$(N_SAMPLES).jsonl
 DATASET_PATH ?= $(DEV_PATHS)
 N_SAMPLES ?= 10
 MAX_LENGTH ?= 512
@@ -51,7 +53,8 @@ sft_train_start:
 	    --lora_r $(LORA_R) \
 	    --lora_alpha $(LORA_ALPHA) \
 	    --lora_dropout $(LORA_DROPOUT) \
-	    --lora_bias $(LORA_BIAS)
+	    --lora_bias $(LORA_BIAS) \
+	    $(if $(LOAD_IN_8BIT),--load_in_8bit)
 #run inference
 sft_inference:
 	python -m train.inference \
@@ -72,7 +75,7 @@ sft_metrics:
 
 #for visual
 run-tensorboard:
-	tensorboard --logdir $(OUTPUT_DIR)/$(MODEL)/$(MODE)/$(EXPERIMENT_NAME)/
+	tensorboard --logdir $(OUTPUT_DIR)
 #dry-build
 docker-build:
 	docker build -t clarifying-questions .
