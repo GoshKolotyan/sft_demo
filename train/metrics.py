@@ -4,6 +4,7 @@ import argparse
 from collections import Counter
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from rouge_score import rouge_scorer
+from bert_score import score as bert_score
 
 from train.helpers import precision_recall, normalize, em
 
@@ -58,9 +59,15 @@ def eval_clarify_q(data):
         rouge = scorer.score(gold, pred)
         rouge_scores.append(rouge['rougeL'].fmeasure)
 
+    # BERTScore
+    golds = [ex['clarification']['question'] for ex in data]
+    preds = [ex['pred']['clarification']['question'] for ex in data]
+    _, _, bert_f1 = bert_score(preds, golds, lang='en', verbose=False)
+
     metrics = {
         'bleu': sum(bleu_scores) / len(bleu_scores),
         'rouge_l': sum(rouge_scores) / len(rouge_scores),
+        'bert_score_f1': bert_f1.mean().item(),
     }
     keys, vals = zip(*metrics.items())
     print('\t'.join(keys))
