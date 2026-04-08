@@ -225,10 +225,14 @@ def main(args):
     if args.base_model is None:
         model_map = {
             'Llama-3.2-3B': 'meta-llama/Llama-3.2-3B',
+            'Llama-3.2-1B': 'meta-llama/Llama-3.2-1B',
+            'gemma-2-2b': 'google/gemma-2-2b',
         }
-        if args.model not in model_map:
-            raise ValueError(f"Unknown model '{args.model}'. Set --base_model explicitly or add to model_map.")
-        args.base_model = model_map[args.model]
+        if args.model in model_map:
+            args.base_model = model_map[args.model]
+        else:
+            # Assume full HF model ID was passed directly
+            args.base_model = args.model
 
     tokenizer = AutoTokenizer.from_pretrained(args.base_model)
     tokenizer.pad_token = tokenizer.unk_token or tokenizer.eos_token
@@ -449,5 +453,5 @@ if __name__ == '__main__':
     cli_args = parser.parse_args()
     random.seed(cli_args.random_seed)
 
-    #same for inferance already default is flash attention
+    #same for inference already default is flash attention
     main(cli_args)

@@ -98,6 +98,7 @@ if __name__ == '__main__':
     parser.add_argument('--lora_alpha', type=int, default=32)
     parser.add_argument('--lora_dropout', type=float, default=0.05)
     parser.add_argument('--lora_bias', default="none")
+    parser.add_argument('--load_in_8bit', action='store_true')
 
 
 

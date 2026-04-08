@@ -10,12 +10,14 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 def train(args, train_data, dev_data, experiment_dir):
     device_count = max(torch.cuda.device_count(), 1)
-    per_device_batch_size = args.batch_size // device_count // args.grad_accum_steps
+    per_device_batch_size = args.batch_size // device_count
     print(f'Device Count={device_count}')
     print(f'Batch Size={args.batch_size}')
     print(f'Grad Accum Steps={args.grad_accum_steps}')
 
-    # quantization_configs = BitsAndBytesConfig(load_in_8bit=True)
+    quantization_config = None
+    if getattr(args, 'load_in_8bit', False):
+        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
 
     training_args = SFTConfig(
         output_dir=experiment_dir,
@@ -38,7 +40,7 @@ def train(args, train_data, dev_data, experiment_dir):
 
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
-        # load_in_8bit=quantization_configs,
+        quantization_config=quantization_config,
         device_map={'':PartialState().process_index}
     )
 

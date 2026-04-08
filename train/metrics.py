@@ -1,8 +1,10 @@
 import json
 import argparse
 
-
 from collections import Counter
+from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+from rouge_score import rouge_scorer
+
 from train.helpers import precision_recall, normalize, em
 
 
@@ -38,6 +40,33 @@ def eval_respond(data, answers_key):
     print('\t'.join(['{:.3f}'.format(v) for v in vals]))
 
     return {'greedy': greedy_metrics, 'sample': sample_metrics}
+
+def eval_clarify_q(data):
+    scorer = rouge_scorer.RougeScorer(['rougeL'], use_stemmer=True)
+    smooth = SmoothingFunction().method1
+    bleu_scores = []
+    rouge_scores = []
+    for ex in data:
+        gold = ex['clarification']['question']
+        pred = ex['pred']['clarification']['question']
+        # BLEU
+        ref_tokens = gold.lower().split()
+        pred_tokens = pred.lower().split()
+        bleu = sentence_bleu([ref_tokens], pred_tokens, smoothing_function=smooth)
+        bleu_scores.append(bleu)
+        # ROUGE-L
+        rouge = scorer.score(gold, pred)
+        rouge_scores.append(rouge['rougeL'].fmeasure)
+
+    metrics = {
+        'bleu': sum(bleu_scores) / len(bleu_scores),
+        'rouge_l': sum(rouge_scores) / len(rouge_scores),
+    }
+    keys, vals = zip(*metrics.items())
+    print('\t'.join(keys))
+    print('\t'.join(['{:.3f}'.format(v) for v in vals]))
+    return metrics
+
 
 def eval_clarify(data, answers_key):
     metrics_counter = Counter()
@@ -81,6 +110,12 @@ def main(args):
         print()
         print('AmbigQA Evaluations:')
         results['ambigqa'] = eval_respond(ambig_data, 'answers')
+    elif args.mode == 'clarify_q':
+        print('Clarifying Question Quality (all):')
+        results['all'] = eval_clarify_q(data)
+        print()
+        print('Clarifying Question Quality (ambiguous only):')
+        results['ambig'] = eval_clarify_q(ambig_data)
     elif args.mode == 'clarify':
         print('NQ-Open Evaluations:')
         results['nq_open'] = eval_clarify(data, 'is_nq')

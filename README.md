@@ -43,6 +43,7 @@ make docker-train # run training on continer
 | Llama-3.2-3B | Ambiguous | 0.283 | 0.534 |
 | Llama-3.2-1B | Ambiguous | 0.246 | 0.504 |
 | Gemma-2-2B | Ambiguous | 0.259 | 0.513 |
+| Qwen2.5-3B | Ambiguous | 0.266 | 0.516 |
 
 #### Example Predictions (gen_clarify_q)
 
@@ -53,6 +54,7 @@ make docker-train # run training on continer
 | Llama-3.2-3B | Are you asking about the original artist of the song "Every Beat of My Heart" or a cover version? |
 | Llama-3.2-1B | Are you asking about the original artist of the song "Every Beat of My Heart" or a cover version? |
 | Gemma-2-2B | Are you asking about the original artist or a cover version? |
+| Qwen2.5-3B | Are you asking about the original artist of the song "Every Beat of My Heart" or a cover version? |
 
 **Q: "Where was tiger spy in the jungle filmed?"**
 | | Question |
@@ -61,6 +63,7 @@ make docker-train # run training on continer
 | Llama-3.2-3B | Are you asking about the country where the show was filmed or the specific location within that country? |
 | Llama-3.2-1B | Are you asking about the specific location where the Tiger Spy in the Jungle movie was filmed or the general area? |
 | Gemma-2-2B | Are you asking about the location where the show was filmed or the location where the show was set? |
+| Qwen2.5-3B | Are you asking about the location where the filming took place or the specific location within the jungle? |
 
 **Q: "When did bear in the big blue house come out?"**
 | | Question |
@@ -69,3 +72,4 @@ make docker-train # run training on continer
 | Llama-3.2-3B | Are you asking about the original release date of the show "Bear in the Big Blue House" or a specific episode? |
 | Llama-3.2-1B | Are you asking about the original release date of the show or the release date of the DVD or Blu-ray version? |
 | Gemma-2-2B | Are you asking about the first episode of the show or the first season? |
+| Qwen2.5-3B | Are you asking about the original release date of the show or the date it was first broadcast on television? |
